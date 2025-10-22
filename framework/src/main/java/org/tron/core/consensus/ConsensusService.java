@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.common.crypto.SignUtils;
 import org.tron.common.parameter.CommonParameter;
+import org.tron.common.utils.ByteArray;
 import org.tron.consensus.Consensus;
 import org.tron.consensus.base.Param;
 import org.tron.consensus.base.Param.Miner;
@@ -36,7 +37,7 @@ public class ConsensusService {
 
   private CommonParameter parameter = Args.getInstance();
 
-  public void start() {
+  /*public void start() {
     Param param = Param.getInstance();
     param.setEnable(parameter.isWitness());
     param.setGenesisBlock(parameter.getGenesisBlock());
@@ -82,8 +83,59 @@ public class ConsensusService {
     param.setPbftInterface(pbftBaseImpl);
     consensus.start(param);
     logger.info("consensus service start success");
+  }*/
+  //pqc
+  public void start() {
+    Param param = Param.getInstance();
+    param.setEnable(parameter.isWitness());
+    param.setGenesisBlock(parameter.getGenesisBlock());
+    param.setMinParticipationRate(parameter.getMinParticipationRate());
+    param.setBlockProduceTimeoutPercent(Args.getInstance().getBlockProducedTimeOut());
+    param.setNeedSyncCheck(parameter.isNeedSyncCheck());
+    param.setAgreeNodeCount(parameter.getAgreeNodeCount());
+    List<Miner> miners = new ArrayList<>();
+    String pqcPrivateKeys = Args.getLocalWitnesses().getPqcPrivateKey();//pqc
+    byte[] pqcPrivateKeysBytes = ByteArray.fromHexString(pqcPrivateKeys);//pqc
+    String pqcPublicKeys = Args.getLocalWitnesses().getPqcPublicKey();//pqc
+    byte[] pqcPublicKeysBytes = ByteArray.fromHexString(pqcPublicKeys);//pqc
+    List<String> privateKeys = Args.getLocalWitnesses().getPrivateKeys();
+    if (privateKeys.size() > 1) {
+      for (String key : privateKeys) {
+        byte[] privateKey = fromHexString(key);
+        byte[] privateKeyAddress = SignUtils
+                .fromPrivate(privateKey, Args.getInstance().isECKeyCryptoEngine()).getAddress();
+        WitnessCapsule witnessCapsule = witnessStore.get(privateKeyAddress);
+        if (null == witnessCapsule) {
+          logger.warn("Witness {} is not in witnessStore.", Hex.toHexString(privateKeyAddress));
+        }
+        //pqc  Miner(byte[] privateKey,byte[] publicPqcKey,byte[] privatePqcKey,ByteString pqcAddress, ByteString privateKeyAddress, ByteString witnessAddress)
+        Miner miner = param.new Miner(privateKey,pqcPublicKeysBytes,pqcPrivateKeysBytes, ByteString.copyFrom(privateKeyAddress),
+                ByteString.copyFrom(privateKeyAddress));//pqc
+        miners.add(miner);
+        logger.info("Add witness: {}, size: {}",
+                Hex.toHexString(privateKeyAddress), miners.size());
+      }
+    } else {
+      byte[] privateKey =
+              fromHexString(Args.getLocalWitnesses().getPrivateKey());
+      byte[] privateKeyAddress = SignUtils.fromPrivate(privateKey,
+              Args.getInstance().isECKeyCryptoEngine()).getAddress();
+      byte[] witnessAddress = Args.getLocalWitnesses().getWitnessAccountAddress(
+              Args.getInstance().isECKeyCryptoEngine());
+      WitnessCapsule witnessCapsule = witnessStore.get(witnessAddress);
+      if (null == witnessCapsule) {
+        logger.warn("Witness {} is not in witnessStore.", Hex.toHexString(witnessAddress));
+      }
+      Miner miner = param.new Miner(privateKey,pqcPublicKeysBytes,pqcPrivateKeysBytes, ByteString.copyFrom(privateKeyAddress),
+              ByteString.copyFrom(witnessAddress));
+      miners.add(miner);
+    }
+    param.setMiners(miners);
+    param.setBlockHandle(blockHandle);
+    param.setPbftInterface(pbftBaseImpl);
+    consensus.start(param);
+    logger.info("consensus service start success");
   }
-
   public void stop() {
     logger.info("consensus service closed start.");
     consensus.stop();

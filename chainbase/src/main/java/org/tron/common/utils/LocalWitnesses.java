@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.tron.common.crypto.ECKey;
 import org.tron.common.crypto.SignInterface;
 import org.tron.common.crypto.SignUtils;
+import org.tron.common.crypto.mldsa.MLDSA;
 import org.tron.core.config.Parameter.ChainConstant;
 
 @Slf4j(topic = "app")
@@ -34,12 +35,31 @@ public class LocalWitnesses {
 
   private byte[] witnessAccountAddress;
 
+  private String pqcPrivateKey;//pqc
+
+  private String pqcPublicKey;//pqc
+
+  private byte[] witnessPqcAddress;//pqc
+
   public LocalWitnesses() {
   }
 
   public LocalWitnesses(String privateKey) {
     addPrivateKeys(privateKey);
   }
+
+  //pqc
+  public LocalWitnesses(String privateKey,String pqcPrivateKey,String pqcPublicKey){
+    addPrivateKeys(privateKey);
+    this.pqcPrivateKey = pqcPrivateKey;
+    this.pqcPublicKey = pqcPublicKey;
+  }
+  //pqc
+  /*public LocalWitnesses(List<String> privateKeys,String pqcPrivateKey,String pqcPublicKey){
+    setPrivateKeys(privateKeys);
+    this.pqcPrivateKey = pqcPrivateKey;
+    this.pqcPublicKey = pqcPublicKey;
+  }*/
 
   public LocalWitnesses(List<String> privateKeys) {
     setPrivateKeys(privateKeys);
@@ -57,6 +77,10 @@ public class LocalWitnesses {
   public void setWitnessAccountAddress(final byte[] localWitnessAccountAddress) {
     this.witnessAccountAddress = localWitnessAccountAddress;
   }
+  //pqc
+  public void setWitnessAccountPqcAddress(final byte[] localWitnessAccountPqcAddress){
+    this.witnessPqcAddress = localWitnessAccountPqcAddress;
+  }
 
   public void initWitnessAccountAddress(boolean isECKeyCryptoEngine) {
     if (witnessAccountAddress == null) {
@@ -64,6 +88,14 @@ public class LocalWitnesses {
       final SignInterface ecKey = SignUtils.fromPrivate(privateKey,
           isECKeyCryptoEngine);
       this.witnessAccountAddress = ecKey.getAddress();
+    }
+  }
+  //pqc
+  public void initWitnessAccountPqcAddress(){
+    if(witnessPqcAddress == null){
+      byte[] pqcPubkey = ByteArray.fromHexString(getPqcPublicKey());
+
+      this.witnessPqcAddress = MLDSA.pubkeyToAddress(pqcPubkey);
     }
   }
 
@@ -78,6 +110,14 @@ public class LocalWitnesses {
       validate(privateKey);
     }
     this.privateKeys = privateKeys;
+  }
+
+  public void setPqcPrivateKey(String pqcPrivateKey){
+    this.pqcPrivateKey = pqcPrivateKey;
+  }
+
+  public void setPqcPublicKey(String pqcPublicKey){
+    this.pqcPublicKey = pqcPublicKey;
   }
 
   private void validate(String privateKey) {
@@ -107,6 +147,14 @@ public class LocalWitnesses {
     return privateKeys.get(0);
   }
 
+  //pqc
+  public String getPqcPublicKey(){
+    return pqcPublicKey;
+  }
+  //pqc
+  public String getPqcPrivateKey(){
+    return pqcPrivateKey;
+  }
   public byte[] getPublicKey() {
     if (CollectionUtils.isEmpty(privateKeys)) {
       logger.warn("PrivateKey is null.");

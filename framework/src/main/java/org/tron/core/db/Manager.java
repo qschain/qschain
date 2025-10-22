@@ -1703,8 +1703,8 @@ public class Manager {
     session.reset();
 
     blockCapsule.setMerkleRoot();
-    blockCapsule.sign(miner.getPrivateKey());
-
+    //blockCapsule.sign(miner.getPrivateKey());
+    blockCapsule.sign(miner.getPrivatePqcKey(),miner.getPublicPqcKey());//pqc
     BlockCapsule capsule = new BlockCapsule(blockCapsule.getInstance());
     capsule.generatedByMyself = true;
     Metrics.histogramObserve(timer);
