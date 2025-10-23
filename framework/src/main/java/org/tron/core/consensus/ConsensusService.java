@@ -17,6 +17,7 @@ import org.tron.consensus.base.Param;
 import org.tron.consensus.base.Param.Miner;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.config.args.Args;
+import org.tron.core.store.AccountStore;
 import org.tron.core.store.WitnessStore;
 
 @Slf4j(topic = "consensus")
@@ -28,6 +29,9 @@ public class ConsensusService {
 
   @Autowired
   private WitnessStore witnessStore;
+
+  @Autowired
+  private AccountStore accountStore;
 
   @Autowired
   private BlockHandleImpl blockHandle;
@@ -105,6 +109,7 @@ public class ConsensusService {
         byte[] privateKeyAddress = SignUtils
                 .fromPrivate(privateKey, Args.getInstance().isECKeyCryptoEngine()).getAddress();
         WitnessCapsule witnessCapsule = witnessStore.get(privateKeyAddress);
+
         if (null == witnessCapsule) {
           logger.warn("Witness {} is not in witnessStore.", Hex.toHexString(privateKeyAddress));
         }

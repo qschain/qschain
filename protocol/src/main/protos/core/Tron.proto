@@ -885,6 +885,7 @@ message PBFTMessage {
   }
   Raw raw_data = 1;
   bytes signature = 2;
+  bytes pqcPubkey = 3;//pqc
 }
 
 message PBFTCommitResult {

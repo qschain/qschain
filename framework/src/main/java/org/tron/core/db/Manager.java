@@ -688,7 +688,8 @@ public class Manager {
             key -> {
               byte[] keyAddress = key.getAddress();
               ByteString address = ByteString.copyFrom(keyAddress);
-
+              byte[] pqcKeyAddress = key.getPqcAddress();//pqc
+              ByteString pqcAddress = ByteString.copyFrom(pqcKeyAddress);//pqc
               final AccountCapsule accountCapsule;
               if (!chainBaseManager.getAccountStore().has(keyAddress)) {
                 accountCapsule = new AccountCapsule(ByteString.EMPTY,
@@ -700,7 +701,7 @@ public class Manager {
               chainBaseManager.getAccountStore().put(keyAddress, accountCapsule);
 
               final WitnessCapsule witnessCapsule =
-                  new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
+                  new WitnessCapsule(address,pqcAddress, key.getVoteCount(), key.getUrl());//pqc
               witnessCapsule.setIsJobs(true);
               chainBaseManager.getWitnessStore().put(keyAddress, witnessCapsule);
             });

@@ -9,11 +9,13 @@ option go_package = "github.com/tronprotocol/grpc-gateway/core";
 message WitnessCreateContract {
   bytes owner_address = 1;
   bytes url = 2;
+  bytes owner_pqc_address = 3;//pqc
 }
 
 message WitnessUpdateContract {
   bytes owner_address = 1;
   bytes update_url = 12;
+  bytes owner_pqc_address = 3;//pqc
 }
 
 message VoteWitnessContract {

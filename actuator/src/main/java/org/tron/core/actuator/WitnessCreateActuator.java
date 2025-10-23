@@ -126,6 +126,7 @@ public class WitnessCreateActuator extends AbstractActuator {
     //Create Witness by witnessCreateContract
     final WitnessCapsule witnessCapsule = new WitnessCapsule(
         witnessCreateContract.getOwnerAddress(),
+        witnessCreateContract.getOwnerPqcAddress(),//pqc
         0,
         witnessCreateContract.getUrl().toStringUtf8());
 

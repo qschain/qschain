@@ -45,7 +45,15 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
         .setAddress(address)
         .setVoteCount(voteCount).setUrl(url).build();
   }
-
+  /**
+   * WitnessCapsule constructor with address and voteCount. pqc
+   */
+  public WitnessCapsule(final ByteString address,final ByteString pqcAddress, final long voteCount, final String url) {
+    final Witness.Builder witnessBuilder = Witness.newBuilder();
+    this.witness = witnessBuilder
+            .setAddress(address).setPqcAddress(pqcAddress)
+            .setVoteCount(voteCount).setUrl(url).build();
+  }
   public WitnessCapsule(final byte[] data) {
     try {
       this.witness = Witness.parseFrom(data);
@@ -61,6 +69,11 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 
   public ByteString getAddress() {
     return this.witness.getAddress();
+  }
+
+  //pqc
+  public ByteString getPqcAddress(){
+    return this.witness.getPqcAddress();
   }
 
   public byte[] createDbKey() {

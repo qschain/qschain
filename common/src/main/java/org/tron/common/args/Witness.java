@@ -31,6 +31,9 @@ public class Witness implements Serializable {
   private byte[] address;
 
   @Getter
+  private byte[] pqcAddress;//pqc
+
+  @Getter
   private String url;
 
   @Getter
@@ -46,6 +49,13 @@ public class Witness implements Serializable {
           "The address(" + StringUtil.createReadableString(address) + ") must be 21 bytes.");
     }
     this.address = address;
+  }
+
+  /*
+  * set pqc address
+  */
+  public void setPqcAddress(final byte[] pqcAddr){
+    this.pqcAddress = pqcAddr;
   }
 
   /**

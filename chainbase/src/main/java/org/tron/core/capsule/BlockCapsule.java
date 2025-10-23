@@ -42,6 +42,7 @@ import org.tron.core.exception.BadItemException;
 import org.tron.core.exception.ValidateSignatureException;
 import org.tron.core.store.AccountStore;
 import org.tron.core.store.DynamicPropertiesStore;
+import org.tron.core.store.WitnessStore;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.BlockHeader;
 import org.tron.protos.Protocol.Transaction;
@@ -190,23 +191,18 @@ public class BlockCapsule implements ProtoCapsule<Block> {
   }
 //pqc
   public boolean validateSignature(DynamicPropertiesStore dynamicPropertiesStore,
-      AccountStore accountStore,ByteString pqcPublicKey) throws ValidateSignatureException {
-      /*byte[] sigAddress = SignUtils.signatureToAddress(getRawHash().getBytes(),
-          TransactionCapsule.getBase64FromByteString(
-              block.getBlockHeader().getWitnessSignature()),
-          CommonParameter.getInstance().isECKeyCryptoEngine());*/
+                                   AccountStore accountStore, WitnessStore witnessStore,ByteString pqcPublicKey) throws ValidateSignatureException {
       byte[] pqcPublicKeyBytes = ByteArray.fromHexString(pqcPublicKey.toString());
+      byte[] pqcAddr = MLDSA.pubkeyToAddress(ByteArray.fromHexString(pqcPublicKey.toString()));
+      byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
+            .toByteArray();
+      WitnessCapsule witnessCapsule = witnessStore.get(witnessAccountAddress);
+      ByteString witnessPqcAddr = witnessCapsule.getPqcAddress();
+      byte[] witnessPqcAddrByte = ByteArray.fromHexString(String.valueOf(witnessPqcAddr));
+      if(!Arrays.equals(pqcAddr,witnessPqcAddrByte)){
+        return false;
+      }
       boolean b = MLDSA.verifyHash(getRawHash().getBytes(),block.getBlockHeader().getWitnessSignature().toByteArray(),pqcPublicKeyBytes);
-      /*byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
-          .toByteArray();*/
-
-      /*if (dynamicPropertiesStore.getAllowMultiSign() != 1) {
-        return Arrays.equals(sigAddress, witnessAccountAddress);
-      } else {
-        byte[] witnessPermissionAddress = accountStore.get(witnessAccountAddress)
-            .getWitnessPermissionAddress();
-        return Arrays.equals(sigAddress, witnessPermissionAddress);
-      }*/
       return b;
   }
   public boolean validateSignature(DynamicPropertiesStore dynamicPropertiesStore,

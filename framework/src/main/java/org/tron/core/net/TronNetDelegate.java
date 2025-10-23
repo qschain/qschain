@@ -345,7 +345,7 @@ public class TronNetDelegate {
     boolean flag;
     try {
       flag = block.validateSignature(dbManager.getDynamicPropertiesStore(),
-              dbManager.getAccountStore(),block.getWitnessPqcPubkey());//pqc
+              dbManager.getAccountStore(),dbManager.getWitnessStore(),block.getWitnessPqcPubkey());//pqc
     } catch (Exception e) {
       throw new P2pException(TypeEnum.BLOCK_SIGN_ERROR, e);
     }

@@ -1320,6 +1320,7 @@ public class Args extends CommonParameter {
         Commons.decodeFromBase58Check(witnessAccount.get("address").unwrapped().toString()));
     witness.setUrl(witnessAccount.get("url").unwrapped().toString());
     witness.setVoteCount(witnessAccount.toConfig().getLong("voteCount"));
+    witness.setPqcAddress(ByteArray.fromHexString(witnessAccount.get("pqcAddress").unwrapped().toString()));//pqc
     return witness;
   }
 

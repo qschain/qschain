@@ -74,4 +74,15 @@ public class test {
         boolean b3 = mldsa.verifyHash(hash1.getBytes(),sig.toByteArray(),pubkeyByte);
         System.out.println(b3);
     }
+    @Test
+    public void testGenerate(){
+        SecureRandom secureRandom = new SecureRandom();
+        MLDSA mldsa = new MLDSA(secureRandom);
+        System.out.println("privateKey:");
+        System.out.println(mldsa.getPrivateKeyHex());
+        System.out.println("publicKey");
+        System.out.println(mldsa.getPubKeyHex());
+        System.out.println("address");
+        System.out.println(mldsa.getAddressHex());
+    }
 }
