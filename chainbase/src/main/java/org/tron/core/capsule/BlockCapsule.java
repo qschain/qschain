@@ -178,10 +178,11 @@ public class BlockCapsule implements ProtoCapsule<Block> {
   public void sign(byte[] pqcPrivateKey,byte[] pqcPublicKey){
     SignInterface pqcSign = MLDSA.fromPrivate(pqcPrivateKey,pqcPublicKey);
     ByteString sig = ByteString.copyFrom(pqcSign.Base64toBytes(pqcSign.signHash(getRawHash().getBytes())));
-    //ByteString pqcPublickeyStr = ByteString.copyFrom(pqcPublicKey);
-    ByteString pqcPublickeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPublicKey));
-    ByteString pqcPrivatekeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPrivateKey));
-    BlockHeader blockHeader = this.block.getBlockHeader().toBuilder().setWitnessSignature(sig).setWitnessPqcPubKey(pqcPublickeyStr).build();
+    ByteString pqcPublickeyStr = ByteString.copyFrom(pqcPublicKey);
+    //ByteString pqcPublickeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPublicKey));
+    //ByteString pqcPrivatekeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPrivateKey));
+    BlockHeader blockHeader = this.block.getBlockHeader().toBuilder().setWitnessSignature(sig)
+            .setWitnessPqcPubKey(pqcPublickeyStr).build();
     this.block = this.block.toBuilder().setBlockHeader(blockHeader).build();
   }
 
@@ -192,13 +193,13 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 //pqc
   public boolean validateSignature(DynamicPropertiesStore dynamicPropertiesStore,
                                    AccountStore accountStore, WitnessStore witnessStore,ByteString pqcPublicKey) throws ValidateSignatureException {
-      byte[] pqcPublicKeyBytes = ByteArray.fromHexString(pqcPublicKey.toString());
-      byte[] pqcAddr = MLDSA.pubkeyToAddress(ByteArray.fromHexString(pqcPublicKey.toString()));
+      byte[] pqcPublicKeyBytes = pqcPublicKey.toByteArray();
+      byte[] pqcAddr = MLDSA.pubkeyToAddress(pqcPublicKeyBytes);
       byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
             .toByteArray();
       WitnessCapsule witnessCapsule = witnessStore.get(witnessAccountAddress);
       ByteString witnessPqcAddr = witnessCapsule.getPqcAddress();
-      byte[] witnessPqcAddrByte = ByteArray.fromHexString(String.valueOf(witnessPqcAddr));
+      byte[] witnessPqcAddrByte = witnessPqcAddr.toByteArray();
       if(!Arrays.equals(pqcAddr,witnessPqcAddrByte)){
         return false;
       }
