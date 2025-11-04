@@ -40,6 +40,9 @@ public class Constant {
   public static final long PB_DEFAULT_ENERGY_LIMIT = 0L;
   public static final long CREATOR_DEFAULT_ENERGY_LIMIT = 1000 * 10_000L;
 
+  //consensus credit score
+  public static final long CREDIT_SCORE = 100;
+
 
   // Numbers
   public static final int ONE_HUNDRED = 100;

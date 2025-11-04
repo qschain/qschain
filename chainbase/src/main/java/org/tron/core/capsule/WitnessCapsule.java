@@ -100,7 +100,14 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
   public void setTotalProduced(final long totalProduced) {
     this.witness = this.witness.toBuilder().setTotalProduced(totalProduced).build();
   }
-
+  //consensus
+  public void setCreditScore(long score){
+    this.witness = this.witness.toBuilder().setCreditScore(score).build();
+  }
+  //consensus
+  public long getCreditScore(){
+    return witness.getCreditScore();
+  }
   public long getTotalMissed() {
     return this.witness.getTotalMissed();
   }

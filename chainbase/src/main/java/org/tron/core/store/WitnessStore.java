@@ -61,10 +61,11 @@ public class WitnessStore extends TronStoreWithRevoking<WitnessCapsule> {
             ? Comparator.comparing(WitnessCapsule::createReadableString).reversed()
             : Comparator.comparingInt((WitnessCapsule w) -> w.getAddress().hashCode()).reversed()));
   }
-
+//consensus
   public void sortWitness(List<ByteString> list, boolean isSortOpt) {
     list.sort(Comparator.comparingLong((ByteString b) -> get(b.toByteArray()).getVoteCount())
-        .reversed().thenComparing(isSortOpt
+        .reversed().thenComparingLong((ByteString b) -> get(b.toByteArray()).getCreditScore())
+            .thenComparing(isSortOpt
             ? Comparator.comparing(
                 (ByteString b) -> ByteArray.toHexString(b.toByteArray())).reversed()
             : Comparator.comparingInt(ByteString::hashCode).reversed()));

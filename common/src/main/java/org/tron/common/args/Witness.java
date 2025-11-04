@@ -37,6 +37,10 @@ public class Witness implements Serializable {
   @Setter
   private long voteCount;
 
+  @Getter
+  @Setter
+  private long creditScore;
+
   /**
    * set address.
    */

@@ -21,3 +21,9 @@ message ProposalDeleteContract {
   bytes owner_address = 1;
   int64 proposal_id = 2;
 }
+
+message ProposalAntiBriberyContract {
+  bytes owner_address = 1;
+  bytes witness_address = 2;
+  bytes evidence_hash = 3;
+}

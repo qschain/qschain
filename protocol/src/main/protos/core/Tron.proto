@@ -46,6 +46,7 @@ message Proposal {
     CANCELED = 3;
   }
   State state = 7;
+  repeated bytes paramArray = 8;//consensus
 }
 
 // Exchange
@@ -285,6 +286,7 @@ message Witness {
   int64 latestBlockNum = 7;
   int64 latestSlotNum = 8;
   bool isJobs = 9;
+  int64 creditScore = 10;//consensus
 }
 
 // Vote Change
@@ -377,6 +379,7 @@ message Transaction {
       DelegateResourceContract = 57;
       UnDelegateResourceContract = 58;
       CancelAllUnfreezeV2Contract = 59;
+      ProposalAntiBriberyActuator = 60;//consensus
     }
     ContractType type = 1;
     google.protobuf.Any parameter = 2;

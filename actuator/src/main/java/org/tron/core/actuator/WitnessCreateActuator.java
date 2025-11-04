@@ -128,7 +128,7 @@ public class WitnessCreateActuator extends AbstractActuator {
         witnessCreateContract.getOwnerAddress(),
         0,
         witnessCreateContract.getUrl().toStringUtf8());
-
+    witnessCapsule.setCreditScore(witnessCreateContract.getCreditScore());//consensus
     logger.debug("createWitness,address[{}]", witnessCapsule.createReadableString());
     witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
     AccountCapsule accountCapsule = accountStore

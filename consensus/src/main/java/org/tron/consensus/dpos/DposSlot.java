@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.consensus.ConsensusDelegate;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 @Slf4j(topic = "consensus")
 @Component
 public class DposSlot {
@@ -48,7 +52,13 @@ public class DposSlot {
     time = time - ((time - dposService.getGenesisBlockTime()) % interval);
     return time + interval * slot;
   }
-
+  //shuffle
+  public List<ByteString> getShuffleActiveWitnesses() {
+    List<ByteString> activeWitnesses = consensusDelegate.getActiveWitnesses();
+    long seed = 12345L;//todo,every 27 turn one
+    Collections.shuffle(activeWitnesses,new java.util.Random(seed));
+    return activeWitnesses;
+  }
   public ByteString getScheduledWitness(long slot) {
     final long currentSlot = getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp()) + slot;
     if (currentSlot < 0) {
@@ -60,7 +70,20 @@ public class DposSlot {
     }
     int witnessIndex = (int) currentSlot % (size * SINGLE_REPEAT);
     witnessIndex /= SINGLE_REPEAT;
-    return consensusDelegate.getActiveWitnesses().get(witnessIndex);
+    return getShuffleActiveWitnesses().get(witnessIndex);
   }
+  /*public ByteString getScheduledWitness(long slot) {
+    final long currentSlot = getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp()) + slot;
+    if (currentSlot < 0) {
+      throw new RuntimeException("current slot should be positive.");
+    }
+    int size = consensusDelegate.getActiveWitnesses().size();
+    if (size <= 0) {
+      throw new RuntimeException("active witnesses is null.");
+    }
+    int witnessIndex = (int) currentSlot % (size * SINGLE_REPEAT);
+    witnessIndex /= SINGLE_REPEAT;
+    return consensusDelegate.getActiveWitnesses().get(witnessIndex);
+  }*/
 
 }
