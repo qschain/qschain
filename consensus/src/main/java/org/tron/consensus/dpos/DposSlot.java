@@ -55,7 +55,14 @@ public class DposSlot {
   //shuffle
   public List<ByteString> getShuffleActiveWitnesses() {
     List<ByteString> activeWitnesses = consensusDelegate.getActiveWitnesses();
-    long seed = 12345L;//todo,every 27 turn one
+    int activeWitnessesSize = activeWitnesses.size();
+    long latestBlockNum = consensusDelegate.getLatestBlockHeaderNumber();
+    long seed = MaintenanceManager.getMaintenanceBlockTimestamp();
+    if(latestBlockNum >= MaintenanceManager.getMaintenanceBlockHeight() + activeWitnessesSize){
+      MaintenanceManager.setMaintenanceBlockHeight(consensusDelegate.getLatestBlockHeaderTimestamp());
+      MaintenanceManager.setMaintenanceBlockTimestamp(consensusDelegate.getLatestBlockHeaderTimestamp());
+      seed = consensusDelegate.getLatestBlockHeaderTimestamp();
+    }
     Collections.shuffle(activeWitnesses,new java.util.Random(seed));
     return activeWitnesses;
   }

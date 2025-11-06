@@ -43,6 +43,14 @@ public class MaintenanceManager {
   private PbftManager pbftManager;
 
   @Getter
+  @Setter
+  private static long maintenanceBlockHeight;//consensus
+
+  @Getter
+  @Setter
+  private static long maintenanceBlockTimestamp;//consensus
+
+  @Getter
   private final List<ByteString> beforeWitness = new ArrayList<>();
   @Getter
   private final List<ByteString> currentWitness = new ArrayList<>();
@@ -87,7 +95,8 @@ public class MaintenanceManager {
 
   public void doMaintenance() {
     VotesStore votesStore = consensusDelegate.getVotesStore();
-
+    setMaintenanceBlockHeight(consensusDelegate.getLatestBlockHeaderNumber());//consensus
+    setMaintenanceBlockTimestamp(consensusDelegate.getLatestBlockHeaderTimestamp());//consensus
     tryRemoveThePowerOfTheGr();
 
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
