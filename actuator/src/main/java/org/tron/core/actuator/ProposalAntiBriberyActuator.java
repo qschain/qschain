@@ -21,7 +21,7 @@ import static org.tron.core.actuator.ActuatorConstant.NOT_EXIST_STR;
 @Slf4j(topic = "actuator")
 public class ProposalAntiBriberyActuator extends AbstractActuator{
     public ProposalAntiBriberyActuator() {
-        super(Protocol.Transaction.Contract.ContractType.ProposalAntiBriberyActuator, ProposalContract.ProposalAntiBriberyContract.class);
+        super(Protocol.Transaction.Contract.ContractType.ProposalAntiBriberyContract, ProposalContract.ProposalAntiBriberyContract.class);
     }
     @Override
     public boolean execute(Object result) throws ContractExeException{

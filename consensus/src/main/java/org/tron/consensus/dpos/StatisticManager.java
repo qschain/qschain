@@ -36,6 +36,7 @@ public class StatisticManager {
 
     long slot = 1;
     if (blockNum != 1) {
+      //获取当前需要提交的区块时间与已提交的最新区块时间之间相差的slot，如果有相差说明有漏过出块
       slot = dposSlot.getSlot(blockTime);
     }
     for (int i = 1; i < slot; ++i) {

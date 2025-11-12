@@ -117,12 +117,13 @@ public class HttpMethed {
 
   /** constructor. */
   public static HttpResponse updateWitness(
-      String httpNode, byte[] witnessAddress, String updateUrl, String fromKey) {
+      String httpNode, byte[] witnessAddress, String updateUrl,int creditScore,String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/updatewitness";
       JsonObject userBaseObj2 = new JsonObject();
       userBaseObj2.addProperty("update_url", str2hex(updateUrl));
       userBaseObj2.addProperty("owner_address", ByteArray.toHexString(witnessAddress));
+      userBaseObj2.addProperty("credit_score",creditScore);
       response = createConnect(requestUrl, userBaseObj2);
       transactionString = EntityUtils.toString(response.getEntity());
       transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);
@@ -358,7 +359,31 @@ public class HttpMethed {
     }
     return response;
   }
+  /** constructor. */
+  public static HttpResponse createProposalAntiBribery(
+          String httpNode, String ownerAddress, String witnessAddress,String evidence_hash, String fromKey) {
+    try {
+      final String requestUrl = "http://" + httpNode + "/wallet/proposalcreate";
+      JsonObject userBaseObj2 = new JsonObject();
+      //JsonObject proposalMap = new JsonObject();
+      userBaseObj2.addProperty("evidence_hash", evidence_hash);
+      userBaseObj2.addProperty("witness_address", witnessAddress);
+      userBaseObj2.addProperty("owner_address", ownerAddress);
+      //userBaseObj2.add("parameters", proposalMap);
 
+      response = createConnect(requestUrl, userBaseObj2);
+      transactionString = EntityUtils.toString(response.getEntity());
+      transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);
+      logger.info(transactionString);
+      logger.info(transactionSignString);
+      response = broadcastTransaction(httpNode, transactionSignString);
+    } catch (Exception e) {
+      e.printStackTrace();
+      httppost.releaseConnection();
+      return null;
+    }
+    return response;
+  }
   /** constructor. */
   public static HttpResponse approvalProposal(
       String httpNode,

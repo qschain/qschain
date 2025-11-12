@@ -7,7 +7,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
+
+import org.apache.http.HttpResponse;
 import org.junit.Test;
+import org.tron.common.utils.client.utils.HttpMethed;
 
 public class UtilsTest {
 
@@ -70,5 +73,37 @@ public class UtilsTest {
 
     result = Utils.repeat("abc", 3);
     assertEquals("abcabcabc", result);
+  }
+  @Test
+  public void testHttpProposalAntiBribery(){//consensus
+    //String httpNode, String ownerAddress, String witnessAddress,String evidence_hash, String fromKey
+    String httpNode = "localhost:50051";
+    String ownerAddress = "TVmHbCwgiKfubGZsDA8q3gKh6kiJSAjYpM";
+    String witnessAddress = "TQpWhimQABVZDd2Kfwdpa9RVxF4YcYoSdy";//supernode1
+    String evidence_hash = "sdfasdfasdfasdfadfasdfasfdsdf";
+    String fromKey = "6c1505933bb9d95b85134734aa5286c88aa076406c3c6f556bb5a0f2b1bb4b53";//supernode
+    HttpResponse response = HttpMethed.createProposalAntiBribery(httpNode,ownerAddress,witnessAddress,evidence_hash,fromKey);
+    System.out.println(response);
+  }
+  @Test
+  public void testHttpWitnessUpdate(){//consensus
+    //String httpNode, byte[] witnessAddress, String updateUrl,int creditScore,String fromKey
+    String httpNode = "localhost:50051";
+    byte[] ownerAddress = ByteArray.fromHexString("TVmHbCwgiKfubGZsDA8q3gKh6kiJSAjYpM");
+    String updateUrl = "https://ipfs.com";
+    int creditScore = 60;
+    String fromKey = "";
+    HttpResponse response = HttpMethed.updateWitness(httpNode,ownerAddress,updateUrl,creditScore,fromKey);
+  }
+  @Test
+  public void testHttpProposalApprove(){//consensus
+    //String httpNode,byte[] ownerAddress,Integer proposalId,Boolean isAddApproval,String fromKey
+    String httpNode = "";
+    byte[] ownerAddress = ByteArray.fromHexString("");
+    Integer proposalId = 1;
+    Boolean isAddApproval = true;
+    String fromKey = "";
+    HttpResponse response = HttpMethed.approvalProposal(httpNode,ownerAddress,proposalId,isAddApproval,fromKey);
+    System.out.println(response);
   }
 }

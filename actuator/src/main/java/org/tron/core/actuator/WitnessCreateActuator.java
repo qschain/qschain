@@ -8,6 +8,7 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.tron.common.utils.DecodeUtil;
 import org.tron.common.utils.StringUtil;
+import org.tron.core.Constant;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.WitnessCapsule;
@@ -128,7 +129,8 @@ public class WitnessCreateActuator extends AbstractActuator {
         witnessCreateContract.getOwnerAddress(),
         0,
         witnessCreateContract.getUrl().toStringUtf8());
-    witnessCapsule.setCreditScore(witnessCreateContract.getCreditScore());//consensus
+    //witnessCapsule.setCreditScore(witnessCreateContract.getCreditScore());//consensus
+    witnessCapsule.setCreditScore(Constant.CREDIT_SCORE);//consensus default credit 100
     logger.debug("createWitness,address[{}]", witnessCapsule.createReadableString());
     witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
     AccountCapsule accountCapsule = accountStore

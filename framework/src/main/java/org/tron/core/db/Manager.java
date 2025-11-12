@@ -702,6 +702,7 @@ public class Manager {
               final WitnessCapsule witnessCapsule =
                   new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
               witnessCapsule.setIsJobs(true);
+              witnessCapsule.setCreditScore(Constant.CREDIT_SCORE);//consensus
               chainBaseManager.getWitnessStore().put(keyAddress, witnessCapsule);
             });
   }
