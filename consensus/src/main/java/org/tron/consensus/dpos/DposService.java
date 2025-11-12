@@ -5,11 +5,8 @@ import static org.tron.core.config.Parameter.ChainConstant.MAX_ACTIVE_WITNESS_NU
 import static org.tron.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
 
 import com.google.protobuf.ByteString;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -183,6 +180,19 @@ public class DposService implements ConsensusInterface {
     } else {
       consensusDelegate.saveActiveWitnesses(list);
     }
+  }
+  //consensus
+  public void updateWitnessRandom(List<ByteString> list,long timeStamp){
+    consensusDelegate.sortWitness(list);
+    Random rand = new Random(timeStamp);
+    List<ByteString> activeWitness = new ArrayList<>();
+    if(list.size() > MAX_ACTIVE_WITNESS_NUM){
+      activeWitness = list.subList(0,MAX_ACTIVE_WITNESS_NUM);
+    }else{
+      activeWitness = list;
+    }
+    Collections.shuffle(activeWitness,rand);
+    consensusDelegate.saveActiveWitnesses(activeWitness);
   }
 
 }

@@ -95,8 +95,6 @@ public class MaintenanceManager {
 
   public void doMaintenance() {
     VotesStore votesStore = consensusDelegate.getVotesStore();
-    setMaintenanceBlockHeight(consensusDelegate.getLatestBlockHeaderNumber());//consensus
-    setMaintenanceBlockTimestamp(consensusDelegate.getLatestBlockHeaderTimestamp());//consensus
     tryRemoveThePowerOfTheGr();
 
     DynamicPropertiesStore dynamicPropertiesStore = consensusDelegate.getDynamicPropertiesStore();
@@ -134,7 +132,8 @@ public class MaintenanceManager {
             witnessCapsule.getVoteCount());
       });
 
-      dposService.updateWitness(newWitnessAddressList);
+      //dposService.updateWitness(newWitnessAddressList);
+      dposService.updateWitnessRandom(newWitnessAddressList,beforeMaintenanceTime);//consensus
 
       incentiveManager.reward(newWitnessAddressList);
 
@@ -155,6 +154,9 @@ public class MaintenanceManager {
       logger.info("Update witness success. \nbefore: {} \nafter: {}",
           getAddressStringList(currentWits),
           getAddressStringList(newWits));
+    }else{
+      List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
+      dposService.updateWitnessRandom(currentWits,beforeMaintenanceTime);//consensus
     }
 
     if (dynamicPropertiesStore.allowChangeDelegation()) {

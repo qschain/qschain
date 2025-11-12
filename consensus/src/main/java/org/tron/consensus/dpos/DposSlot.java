@@ -5,15 +5,16 @@ import static org.tron.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERV
 import static org.tron.core.config.Parameter.ChainConstant.SINGLE_REPEAT;
 
 import com.google.protobuf.ByteString;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.consensus.ConsensusDelegate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 @Slf4j(topic = "consensus")
 @Component
@@ -24,6 +25,10 @@ public class DposSlot {
 
   @Setter
   private DposService dposService;
+
+  @Getter
+  @Setter
+  private List<ByteString> shuffleActiveWitnesses = new ArrayList<>();
 
   public long getAbSlot(long time) {
     return (time - dposService.getGenesisBlockTime()) / BLOCK_PRODUCED_INTERVAL;
@@ -53,18 +58,18 @@ public class DposSlot {
     return time + interval * slot;
   }
   //shuffle
-  public List<ByteString> getShuffleActiveWitnesses() {
+  public void shuffleActiveWitnesses() {
     List<ByteString> activeWitnesses = consensusDelegate.getActiveWitnesses();
     int activeWitnessesSize = activeWitnesses.size();
     long latestBlockNum = consensusDelegate.getLatestBlockHeaderNumber();
     long seed = MaintenanceManager.getMaintenanceBlockTimestamp();
     if(latestBlockNum >= MaintenanceManager.getMaintenanceBlockHeight() + activeWitnessesSize){
-      MaintenanceManager.setMaintenanceBlockHeight(consensusDelegate.getLatestBlockHeaderTimestamp());
+      MaintenanceManager.setMaintenanceBlockHeight(latestBlockNum);
       MaintenanceManager.setMaintenanceBlockTimestamp(consensusDelegate.getLatestBlockHeaderTimestamp());
       seed = consensusDelegate.getLatestBlockHeaderTimestamp();
     }
     Collections.shuffle(activeWitnesses,new java.util.Random(seed));
-    return activeWitnesses;
+    shuffleActiveWitnesses = activeWitnesses;
   }
   public ByteString getScheduledWitness(long slot) {
     final long currentSlot = getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp()) + slot;
@@ -77,20 +82,7 @@ public class DposSlot {
     }
     int witnessIndex = (int) currentSlot % (size * SINGLE_REPEAT);
     witnessIndex /= SINGLE_REPEAT;
-    return getShuffleActiveWitnesses().get(witnessIndex);
-  }
-  /*public ByteString getScheduledWitness(long slot) {
-    final long currentSlot = getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp()) + slot;
-    if (currentSlot < 0) {
-      throw new RuntimeException("current slot should be positive.");
-    }
-    int size = consensusDelegate.getActiveWitnesses().size();
-    if (size <= 0) {
-      throw new RuntimeException("active witnesses is null.");
-    }
-    int witnessIndex = (int) currentSlot % (size * SINGLE_REPEAT);
-    witnessIndex /= SINGLE_REPEAT;
     return consensusDelegate.getActiveWitnesses().get(witnessIndex);
-  }*/
+  }
 
 }
