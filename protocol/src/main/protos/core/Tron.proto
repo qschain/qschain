@@ -288,7 +288,7 @@ message Witness {
   bool isJobs = 9;
   bytes pqc_pubKey = 10;//pqc
   bytes pqc_address = 11;//pqc
-  int64 creditScore = 10;//consensus
+  int64 creditScore = 12;//consensus
 }
 
 // Vote Change

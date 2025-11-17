@@ -10,7 +10,7 @@ message WitnessCreateContract {
   bytes owner_address = 1;
   bytes url = 2;
   int64 credit_score = 3;//consensus
-  bytes owner_pqc_address = 3;//pqc
+  bytes owner_pqc_address = 4;//pqc
 }
 
 message WitnessUpdateContract {
@@ -23,7 +23,7 @@ message WitnessCreditUpdateContract{//consensus
   bytes owner_address = 1;
   bytes update_witness = 2;
   int64 update_credit = 3;
-  bytes owner_pqc_address = 3;//pqc
+  bytes owner_pqc_address = 4;//pqc
 }
 
 message VoteWitnessContract {
