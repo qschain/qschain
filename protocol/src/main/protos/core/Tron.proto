@@ -380,6 +380,7 @@ message Transaction {
       UnDelegateResourceContract = 58;
       CancelAllUnfreezeV2Contract = 59;
       ProposalAntiBriberyContract = 60;//consensus
+      WitnessCreditUpdateContract = 61;//consensus
     }
     ContractType type = 1;
     google.protobuf.Any parameter = 2;

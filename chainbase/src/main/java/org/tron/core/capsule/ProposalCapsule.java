@@ -75,7 +75,7 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
   public void setParamArray(ByteString[] params){
     for(int i=0;i<params.length;i++){
       this.proposal = this.proposal.toBuilder()
-              .setParamArray(i,params[i])
+              .addParamArray(params[i])
               .build();
     }
 

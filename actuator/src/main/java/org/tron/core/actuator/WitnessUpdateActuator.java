@@ -28,7 +28,7 @@ public class WitnessUpdateActuator extends AbstractActuator {
     WitnessCapsule witnessCapsule = witnessStore
         .get(contract.getOwnerAddress().toByteArray());
     witnessCapsule.setUrl(contract.getUpdateUrl().toStringUtf8());
-    witnessCapsule.setCreditScore(contract.getCreditScore());//consensus
+    //witnessCapsule.setCreditScore(contract.getCreditScore());//consensus
     witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
   }
 

@@ -118,6 +118,8 @@ public class FullNodeHttpApiService extends HttpService {
   @Autowired
   private ProposalAntiBriberyServlet proposalAntiBriberyServlet;//consensus
   @Autowired
+  private WitnessCreditUpdateServlet witnessCreditUpdateServlet;//consensus
+  @Autowired
   private ProposalApproveServlet proposalApproveServlet;
   @Autowired
   private ProposalDeleteServlet proposalDeleteServlet;
@@ -368,6 +370,7 @@ public class FullNodeHttpApiService extends HttpService {
     context.addServlet(new ServletHolder(clearABIServlet), "/wallet/clearabi");
     context.addServlet(new ServletHolder(proposalCreateServlet), "/wallet/proposalcreate");
     context.addServlet(new ServletHolder(proposalAntiBriberyServlet),"/wallet/proposalantibribery");//consensus
+    context.addServlet(new ServletHolder(witnessCreditUpdateServlet),"/wallet/witnessCreditUpdate");//consensus
     context.addServlet(new ServletHolder(proposalApproveServlet), "/wallet/proposalapprove");
     context.addServlet(new ServletHolder(proposalDeleteServlet), "/wallet/proposaldelete");
     context.addServlet(new ServletHolder(listProposalsServlet), "/wallet/listproposals");

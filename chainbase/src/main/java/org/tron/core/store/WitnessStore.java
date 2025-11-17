@@ -63,11 +63,6 @@ public class WitnessStore extends TronStoreWithRevoking<WitnessCapsule> {
   }
 //consensus
   public void sortWitness(List<ByteString> list, boolean isSortOpt) {
-    System.out.println("=====print=creditScore============start==========");
-    for(int i = 0;i<list.size();i++){//consensus
-      System.out.println(get(list.get(i).toByteArray()).getCreditScore());
-    }
-    System.out.println("=====print=creditScore============end============");
     list.sort(Comparator.comparingLong((ByteString b) -> get(b.toByteArray()).getVoteCount())
         .reversed().thenComparingLong((ByteString b) -> get(b.toByteArray()).getCreditScore())
             .thenComparing(isSortOpt

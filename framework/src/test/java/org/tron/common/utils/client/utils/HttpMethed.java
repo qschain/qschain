@@ -1,5 +1,6 @@
 package org.tron.common.utils.client.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -117,13 +120,58 @@ public class HttpMethed {
 
   /** constructor. */
   public static HttpResponse updateWitness(
-      String httpNode, byte[] witnessAddress, String updateUrl,int creditScore,String fromKey) {
+      String httpNode, byte[] witnessAddress, String updateUrl,String fromKey) {
     try {
       final String requestUrl = "http://" + httpNode + "/wallet/updatewitness";
       JsonObject userBaseObj2 = new JsonObject();
       userBaseObj2.addProperty("update_url", str2hex(updateUrl));
       userBaseObj2.addProperty("owner_address", ByteArray.toHexString(witnessAddress));
-      userBaseObj2.addProperty("credit_score",creditScore);
+      response = createConnect(requestUrl, userBaseObj2);
+      transactionString = EntityUtils.toString(response.getEntity());
+
+      // 解析JSON字符串
+      JSONObject root = JSON.parseObject(transactionString);
+      // 导航到 parameter -> value 字段
+      JSONObject rawData = root.getJSONObject("raw_data");
+      JSONArray contract = rawData.getJSONArray("contract");
+      JSONObject firstContract = contract.getJSONObject(0);
+      JSONObject parameter = firstContract.getJSONObject("parameter");
+      // 获取value对象并转换为字符串
+      JSONObject value = parameter.getJSONObject("value");
+      String valueAsString = JSON.toJSONString(value);
+
+      // 替换原来的value字段为字符串
+      parameter.put("value", valueAsString);
+      root.remove("raw_data_hex");
+
+      transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);
+      logger.info(transactionString);
+      logger.info(transactionSignString);
+      response = broadcastTransaction(httpNode, transactionSignString);
+    } catch (Exception e) {
+      e.printStackTrace();
+      httppost.releaseConnection();
+      return null;
+    }
+    return response;
+  }
+
+  // 验证十六进制字符串的辅助方法
+  private static boolean isValidHexString(String hex) {
+    if (hex == null) return false;
+    return hex.matches("[0-9a-fA-F]+");
+  }
+
+  /** constructor. */
+  public static HttpResponse updateWitnessCredit(
+          String httpNode,byte[] ownerAddress, byte[] witnessAddress, int score,String fromKey) {
+    try {
+      final String requestUrl = "http://" + httpNode + "/wallet/witnessCreditUpdate";
+      JsonObject userBaseObj2 = new JsonObject();
+      userBaseObj2.addProperty("owner_address", ByteArray.toHexString(ownerAddress));
+      userBaseObj2.addProperty("update_witness",ByteArray.toHexString(witnessAddress));
+      userBaseObj2.addProperty("update_credit",score);
+
       response = createConnect(requestUrl, userBaseObj2);
       transactionString = EntityUtils.toString(response.getEntity());
       transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);
@@ -384,6 +432,30 @@ public class HttpMethed {
     }
     return response;
   }
+
+  /** constructor. */
+  public static HttpResponse updateWitnessCredit(
+          String httpNode, String ownerAddress, String witnessAddress,int score, String fromKey) {
+    try {
+      final String requestUrl = "http://" + httpNode + "/wallet/proposalcreate";
+      JsonObject userBaseObj2 = new JsonObject();
+      userBaseObj2.addProperty("witness_address", witnessAddress);
+      userBaseObj2.addProperty("owner_address", ownerAddress);
+      userBaseObj2.addProperty("update_credit",score);
+      response = createConnect(requestUrl, userBaseObj2);
+      transactionString = EntityUtils.toString(response.getEntity());
+      transactionSignString = gettransactionsign(httpNode, transactionString, fromKey);
+      logger.info(transactionString);
+      logger.info(transactionSignString);
+      response = broadcastTransaction(httpNode, transactionSignString);
+    } catch (Exception e) {
+      e.printStackTrace();
+      httppost.releaseConnection();
+      return null;
+    }
+    return response;
+  }
+
   /** constructor. */
   public static HttpResponse approvalProposal(
       String httpNode,

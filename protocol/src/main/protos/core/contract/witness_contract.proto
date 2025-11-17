@@ -15,7 +15,13 @@ message WitnessCreateContract {
 message WitnessUpdateContract {
   bytes owner_address = 1;
   bytes update_url = 12;
-  int64 credit_score = 3;//consensus
+  //int64 credit_score = 3;//consensus
+}
+
+message WitnessCreditUpdateContract{//consensus
+  bytes owner_address = 1;
+  bytes update_witness = 2;
+  int64 update_credit = 3;
 }
 
 message VoteWitnessContract {
