@@ -70,6 +70,9 @@ public class Constant {
   public static final String TESTNET = "testnet";
   public static final String LOCAL_WITNESS = "localwitness";
   public static final String LOCAL_WITNESS_ACCOUNT_ADDRESS = "localWitnessAccountAddress";
+  public static final String LOCAL_WITNESS_ACCOUNT_PQC_ADDRESS = "localWitnessAccountPqcAddress";//pqc
+  public static final String LOCAL_WITNESS_ACCOUNT_PQC_Privatekey = "localWitnessAccountPqcPrivatekey";//pqc
+  public static final String LOCAL_WITNESS_ACCOUNT_PQC_Publickey = "localWitnessAccountPqcPublickey";//pqc
   public static final String LOCAL_WITNESS_KEYSTORE = "localwitnesskeystore";
   public static final String VM_SUPPORT_CONSTANT = "vm.supportConstant";
   public static final String VM_MAX_ENERGY_LIMIT_FOR_CONSTANT = "vm.maxEnergyLimitForConstant";

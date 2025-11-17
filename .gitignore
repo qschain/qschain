@@ -10,8 +10,6 @@ build
 # log
 logs
 consensus-logs
-framework/logs/tron-test.log
-*.log
 
 # lombok
 out

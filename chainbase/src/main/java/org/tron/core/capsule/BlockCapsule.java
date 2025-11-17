@@ -31,6 +31,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.tron.common.bloom.Bloom;
 import org.tron.common.crypto.SignInterface;
 import org.tron.common.crypto.SignUtils;
+import org.tron.common.crypto.mldsa.MLDSA;
 import org.tron.common.parameter.CommonParameter;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
@@ -41,6 +42,7 @@ import org.tron.core.exception.BadItemException;
 import org.tron.core.exception.ValidateSignatureException;
 import org.tron.core.store.AccountStore;
 import org.tron.core.store.DynamicPropertiesStore;
+import org.tron.core.store.WitnessStore;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.BlockHeader;
 import org.tron.protos.Protocol.Transaction;
@@ -172,27 +174,53 @@ public class BlockCapsule implements ProtoCapsule<Block> {
     this.block = this.block.toBuilder().setBlockHeader(blockHeader).build();
 
   }
+  //pqc
+  public void sign(byte[] pqcPrivateKey,byte[] pqcPublicKey){
+    SignInterface pqcSign = MLDSA.fromPrivate(pqcPrivateKey,pqcPublicKey);
+    ByteString sig = ByteString.copyFrom(pqcSign.Base64toBytes(pqcSign.signHash(getRawHash().getBytes())));
+    ByteString pqcPublickeyStr = ByteString.copyFrom(pqcPublicKey);
+    //ByteString pqcPublickeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPublicKey));
+    //ByteString pqcPrivatekeyStr = ByteString.fromHex(ByteArray.toHexString(pqcPrivateKey));
+    BlockHeader blockHeader = this.block.getBlockHeader().toBuilder().setWitnessSignature(sig)
+            .setWitnessPqcPubKey(pqcPublickeyStr).build();
+    this.block = this.block.toBuilder().setBlockHeader(blockHeader).build();
+  }
 
   private Sha256Hash getRawHash() {
     return Sha256Hash.of(CommonParameter.getInstance().isECKeyCryptoEngine(),
         this.block.getBlockHeader().getRawData().toByteArray());
   }
-
+//pqc
   public boolean validateSignature(DynamicPropertiesStore dynamicPropertiesStore,
-      AccountStore accountStore) throws ValidateSignatureException {
+                                   AccountStore accountStore, WitnessStore witnessStore,ByteString pqcPublicKey) throws ValidateSignatureException {
+      byte[] pqcPublicKeyBytes = pqcPublicKey.toByteArray();
+      byte[] pqcAddr = MLDSA.pubkeyToAddress(pqcPublicKeyBytes);
+      byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
+            .toByteArray();
+      WitnessCapsule witnessCapsule = witnessStore.get(witnessAccountAddress);
+      ByteString witnessPqcAddr = witnessCapsule.getPqcAddress();
+      byte[] witnessPqcAddrByte = witnessPqcAddr.toByteArray();
+      if(!Arrays.equals(pqcAddr,witnessPqcAddrByte)){
+        return false;
+      }
+      boolean b = MLDSA.verifyHash(getRawHash().getBytes(),block.getBlockHeader().getWitnessSignature().toByteArray(),pqcPublicKeyBytes);
+      return b;
+  }
+  public boolean validateSignature(DynamicPropertiesStore dynamicPropertiesStore,
+                                   AccountStore accountStore) throws ValidateSignatureException {
     try {
       byte[] sigAddress = SignUtils.signatureToAddress(getRawHash().getBytes(),
-          TransactionCapsule.getBase64FromByteString(
-              block.getBlockHeader().getWitnessSignature()),
-          CommonParameter.getInstance().isECKeyCryptoEngine());
+              TransactionCapsule.getBase64FromByteString(
+                      block.getBlockHeader().getWitnessSignature()),
+              CommonParameter.getInstance().isECKeyCryptoEngine());
       byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
-          .toByteArray();
+              .toByteArray();
 
       if (dynamicPropertiesStore.getAllowMultiSign() != 1) {
         return Arrays.equals(sigAddress, witnessAccountAddress);
       } else {
         byte[] witnessPermissionAddress = accountStore.get(witnessAccountAddress)
-            .getWitnessPermissionAddress();
+                .getWitnessPermissionAddress();
         return Arrays.equals(sigAddress, witnessPermissionAddress);
       }
 
@@ -267,6 +295,15 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
   public ByteString getWitnessAddress() {
     return this.block.getBlockHeader().getRawData().getWitnessAddress();
+  }
+
+  //pqc
+  public ByteString getWitnessPqcAddress(){
+    return this.block.getBlockHeader().getRawData().getWitnessPqcAddress();
+  }
+  //pqc
+  public ByteString getWitnessPqcPubkey(){
+    return this.block.getBlockHeader().getWitnessPqcPubKey();
   }
 
   public boolean isMerkleRootEmpty() {

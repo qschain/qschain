@@ -286,6 +286,8 @@ message Witness {
   int64 latestBlockNum = 7;
   int64 latestSlotNum = 8;
   bool isJobs = 9;
+  bytes pqc_pubKey = 10;//pqc
+  bytes pqc_address = 11;//pqc
   int64 creditScore = 10;//consensus
 }
 
@@ -887,6 +889,7 @@ message PBFTMessage {
   }
   Raw raw_data = 1;
   bytes signature = 2;
+  bytes pqcPubkey = 3;//pqc
 }
 
 message PBFTCommitResult {

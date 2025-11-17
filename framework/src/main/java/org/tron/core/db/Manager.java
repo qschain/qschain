@@ -688,7 +688,8 @@ public class Manager {
             key -> {
               byte[] keyAddress = key.getAddress();
               ByteString address = ByteString.copyFrom(keyAddress);
-
+              byte[] pqcKeyAddress = key.getPqcAddress();//pqc
+              ByteString pqcAddress = ByteString.copyFrom(pqcKeyAddress);//pqc
               final AccountCapsule accountCapsule;
               if (!chainBaseManager.getAccountStore().has(keyAddress)) {
                 accountCapsule = new AccountCapsule(ByteString.EMPTY,
@@ -700,7 +701,7 @@ public class Manager {
               chainBaseManager.getAccountStore().put(keyAddress, accountCapsule);
 
               final WitnessCapsule witnessCapsule =
-                  new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
+                  new WitnessCapsule(address,pqcAddress, key.getVoteCount(), key.getUrl());//pqc
               witnessCapsule.setIsJobs(true);
               witnessCapsule.setCreditScore(Constant.CREDIT_SCORE);//consensus
               chainBaseManager.getWitnessStore().put(keyAddress, witnessCapsule);
@@ -1704,8 +1705,8 @@ public class Manager {
     session.reset();
 
     blockCapsule.setMerkleRoot();
-    blockCapsule.sign(miner.getPrivateKey());
-
+    //blockCapsule.sign(miner.getPrivateKey());
+    blockCapsule.sign(miner.getPrivatePqcKey(),miner.getPublicPqcKey());//pqc
     BlockCapsule capsule = new BlockCapsule(blockCapsule.getInstance());
     capsule.generatedByMyself = true;
     Metrics.histogramObserve(timer);

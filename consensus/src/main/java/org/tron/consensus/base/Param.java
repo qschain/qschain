@@ -5,6 +5,8 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tron.common.args.GenesisBlock;
+import org.tron.common.crypto.mldsa.MLDSA;
+import org.tron.common.utils.ByteArray;
 
 public class Param {
 
@@ -61,6 +63,18 @@ public class Param {
 
     @Getter
     @Setter
+    private byte[] privatePqcKey;//pqc
+
+    @Getter
+    @Setter
+    private byte[] publicPqcKey;//pqc
+
+    @Getter
+    @Setter
+    private ByteString pqcAddress;//pqc
+
+    @Getter
+    @Setter
     private ByteString privateKeyAddress;
 
     @Getter
@@ -71,6 +85,17 @@ public class Param {
       this.privateKey = privateKey;
       this.privateKeyAddress = privateKeyAddress;
       this.witnessAddress = witnessAddress;
+    }
+    //pqc
+    public Miner(byte[] privateKey,byte[] publicPqcKey,byte[] privatePqcKey,ByteString privateKeyAddress, ByteString witnessAddress) {
+      this.privateKey = privateKey;
+      this.privateKeyAddress = privateKeyAddress;
+      this.witnessAddress = witnessAddress;
+      this.privatePqcKey = privatePqcKey;
+      this.publicPqcKey = publicPqcKey;
+      byte[] pqcAddressByte = MLDSA.pubkeyToAddress(publicPqcKey);
+      ByteArray.toHexString(pqcAddressByte);
+      this.pqcAddress = ByteString.fromHex(ByteArray.toHexString(pqcAddressByte));;
     }
   }
 

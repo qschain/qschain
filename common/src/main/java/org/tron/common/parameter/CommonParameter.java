@@ -108,6 +108,12 @@ public class CommonParameter {
   public String privateKey = "";
   @Parameter(names = {"--witness-address"}, description = "witness-address")
   public String witnessAddress = "";
+  @Parameter(names = {"--private-pqc-key"}, description = "Witness pqc private key")
+  public String pqcPrivateKey = "";//pqc
+  @Parameter(names = {"--public-pqc-key"}, description = "Witness pqc public key")
+  public String pqcWitnessPublicKey  = "";//pqc
+  @Parameter(names = {"--pqc-address"}, description = "Witness pqc address")
+  public String pqcWitnessAddress = "";//pqc
   @Parameter(names = {"--password"}, description = "password")
   public String password;
   @Parameter(names = {"--storage-db-directory"}, description = "Storage db directory")

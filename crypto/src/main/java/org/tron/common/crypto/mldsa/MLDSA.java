@@ -1,5 +1,6 @@
 package org.tron.common.crypto.mldsa;
 
+import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.pqc.crypto.crystals.dilithium.*;
@@ -9,6 +10,8 @@ import org.tron.common.crypto.Hash;
 import org.tron.common.crypto.SignInterface;
 import org.tron.common.crypto.SignatureInterface;
 import org.tron.common.crypto.jce.TronCastleProvider;
+import org.tron.common.utils.ByteArray;
+
 import java.io.Serializable;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
@@ -83,7 +86,6 @@ public class MLDSA implements Serializable, SignInterface {
             // 获取私钥数据（ML-DSA私钥是字节数组，不是单个BigInteger）
             byte[] privateKeyData = dilithiumPrivate.getEncoded();
             this.privateKeyBytes = privateKeyData.clone();
-
             // 获取公钥数据
             byte[] publicKeyData = dilithiumPublic.getEncoded();
             this.publicKeyBytes = publicKeyData.clone();
@@ -218,8 +220,7 @@ public class MLDSA implements Serializable, SignInterface {
     /**
      * 使用公钥验证签名
      */
-    public static boolean verifyHash(byte[] hash, byte[] signatureBytes, byte[] publicKeyBytes)
-            throws GeneralSecurityException {
+    public static boolean verifyHash(byte[] hash, byte[] signatureBytes, byte[] publicKeyBytes) {
         DilithiumSigner signer = new DilithiumSigner();
         DilithiumPublicKeyParameters pubkey = new DilithiumPublicKeyParameters(detectFromPublicKeyLength(publicKeyBytes),publicKeyBytes);
         signer.init(false,pubkey);
@@ -233,22 +234,6 @@ public class MLDSA implements Serializable, SignInterface {
             throw new IllegalArgumentException("公钥字节数组不能为空");
         }
         return Hash.computeAddress(publicKeyBytes);
-        /*try {
-            // 使用Keccak-256哈希公钥（与波场保持一致）
-            MessageDigest digest = MessageDigest.getInstance("TRON-KECCAK-256", TronCastleProvider.getInstance());
-            byte[] hash = digest.digest(publicKeyBytes);
-            // 取最后20字节作为地址（与以太坊/波场格式兼容）
-            return Arrays.copyOfRange(hash, hash.length - 20, hash.length);
-        } catch (NoSuchAlgorithmException e) {
-            // 如果Keccak-256不可用，使用SHA-256作为备选
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hash = digest.digest(publicKeyBytes);
-                return Arrays.copyOfRange(hash, hash.length - 20, hash.length);
-            } catch (NoSuchAlgorithmException ex) {
-                throw new RuntimeException("哈希算法不可用", ex);
-            }
-        }*/
     }
     /**
      * 生成地址
@@ -258,23 +243,6 @@ public class MLDSA implements Serializable, SignInterface {
             throw new IllegalArgumentException("公钥字节数组不能为空");
         }
         return Hash.computeAddress(publicKeyBytes);
-        /*try {
-            // 使用Keccak-256哈希公钥（与波场保持一致）
-            MessageDigest digest = MessageDigest.getInstance("TRON-KECCAK-256",TronCastleProvider.getInstance());
-            byte[] hash = digest.digest(publicKeyBytes);
-
-            // 取最后20字节作为地址（与以太坊/波场格式兼容）
-            return Arrays.copyOfRange(hash, hash.length - 20, hash.length);
-        } catch (NoSuchAlgorithmException e) {
-            // 如果Keccak-256不可用，使用SHA-256作为备选
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hash = digest.digest(publicKeyBytes);
-                return Arrays.copyOfRange(hash, hash.length - 20, hash.length);
-            } catch (NoSuchAlgorithmException ex) {
-                throw new RuntimeException("哈希算法不可用", ex);
-            }
-        }*/
     }
 
     /**
@@ -305,6 +273,9 @@ public class MLDSA implements Serializable, SignInterface {
         return Base64.getEncoder().encodeToString(publicKeyBytes);
     }
 
+    public String getPubKeyHex(){
+        return ByteArray.toHexString(publicKeyBytes);
+    }
     /**
      * 获取私钥的Base64编码
      */
@@ -312,15 +283,21 @@ public class MLDSA implements Serializable, SignInterface {
         return Base64.getEncoder().encodeToString(privateKeyBytes);
     }
 
+    public String getPrivateKeyHex(){
+        return ByteArray.toHexString(privateKeyBytes);
+    }
+
     /**
      * 获取地址的十六进制字符串
      */
     public String getAddressHex() {
-        return bytesToHex(address);
+        //return bytesToHex(address);
+        return ByteArray.toHexString(address);
     }
 
     public static String getAddressHex(byte[] address){
-        return bytesToHex(address);
+        //return bytesToHex(address);
+        return ByteArray.toHexString(address);
     }
     /**
      * 字节数组转十六进制字符串

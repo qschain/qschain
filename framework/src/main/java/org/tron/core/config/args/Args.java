@@ -108,6 +108,9 @@ public class Args extends CommonParameter {
     PARAMETER.storageDbDirectory = "";
     PARAMETER.storageIndexDirectory = "";
     PARAMETER.storageIndexSwitch = "";
+    PARAMETER.pqcWitnessAddress = "";//pqc
+    PARAMETER.pqcPrivateKey = "";//pqc
+    PARAMETER.pqcWitnessPublicKey = "";//pqc
 
     // FIXME: PARAMETER.storage maybe null ?
     if (PARAMETER.storage != null) {
@@ -396,8 +399,8 @@ public class Args extends CommonParameter {
     PARAMETER.cryptoEngine = config.hasPath(Constant.CRYPTO_ENGINE) ? config
         .getString(Constant.CRYPTO_ENGINE) : Constant.ECKey_ENGINE;
 
-    if (StringUtils.isNoneBlank(PARAMETER.privateKey)) {
-      localWitnesses = (new LocalWitnesses(PARAMETER.privateKey));
+    if (StringUtils.isNoneBlank(PARAMETER.privateKey,PARAMETER.pqcPrivateKey,PARAMETER.pqcWitnessPublicKey)) {//pqc
+      localWitnesses = (new LocalWitnesses(PARAMETER.privateKey,PARAMETER.pqcPrivateKey,PARAMETER.pqcWitnessPublicKey));
       if (StringUtils.isNoneBlank(PARAMETER.witnessAddress)) {
         byte[] bytes = Commons.decodeFromBase58Check(PARAMETER.witnessAddress);
         if (bytes != null) {
@@ -409,15 +412,29 @@ public class Args extends CommonParameter {
         }
       }
       localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
+      localWitnesses.initWitnessAccountPqcAddress();//pqc
       logger.debug("Got privateKey from cmd");
-    } else if (config.hasPath(Constant.LOCAL_WITNESS)) {
+    } else if (config.hasPath(Constant.LOCAL_WITNESS)&&config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Privatekey)&&config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Publickey)) {//pqc
+      //pqc
+      localWitnesses = new LocalWitnesses();
+      List<String> localwitness = config.getStringList(Constant.LOCAL_WITNESS);
+      String localWitnessPqcPrivatekey = config.getString(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Privatekey);//pqc
+      String localWitnessPqcPublickey = config.getString(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Publickey);//pqc
+      localWitnesses.setPrivateKeys(localwitness);
+      localWitnesses.setPqcPrivateKey(localWitnessPqcPrivatekey);//pqc
+      localWitnesses.setPqcPublicKey(localWitnessPqcPublickey);//pqc
+      witnessAddressCheck(config);
+      localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
+      localWitnesses.initWitnessAccountPqcAddress();//pqc
+      logger.debug("Got privateKey from config.conf");
+    }else if(config.hasPath(Constant.LOCAL_WITNESS)){
       localWitnesses = new LocalWitnesses();
       List<String> localwitness = config.getStringList(Constant.LOCAL_WITNESS);
       localWitnesses.setPrivateKeys(localwitness);
       witnessAddressCheck(config);
       localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
       logger.debug("Got privateKey from config.conf");
-    } else if (config.hasPath(Constant.LOCAL_WITNESS_KEYSTORE)) {
+    } else if (config.hasPath(Constant.LOCAL_WITNESS_KEYSTORE)&&config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Privatekey)&&config.hasPath(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Publickey)) {//pqc
       localWitnesses = new LocalWitnesses();
       List<String> privateKeys = new ArrayList<String>();
       if (PARAMETER.isWitness()) {
@@ -446,8 +463,13 @@ public class Args extends CommonParameter {
         }
       }
       localWitnesses.setPrivateKeys(privateKeys);
+      String localWitnessPqcPrivatekey = config.getString(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Privatekey);//pqc
+      String localWitnessPqcPublickey = config.getString(Constant.LOCAL_WITNESS_ACCOUNT_PQC_Publickey);//pqc
+      localWitnesses.setPqcPublicKey(localWitnessPqcPublickey);//pqc
+      localWitnesses.setPqcPrivateKey(localWitnessPqcPrivatekey);//pqc
       witnessAddressCheck(config);
       localWitnesses.initWitnessAccountAddress(PARAMETER.isECKeyCryptoEngine());
+      localWitnesses.initWitnessAccountPqcAddress();//pqc
       logger.debug("Got privateKey from keystore");
     }
 
@@ -1305,6 +1327,7 @@ public class Args extends CommonParameter {
         Commons.decodeFromBase58Check(witnessAccount.get("address").unwrapped().toString()));
     witness.setUrl(witnessAccount.get("url").unwrapped().toString());
     witness.setVoteCount(witnessAccount.toConfig().getLong("voteCount"));
+    witness.setPqcAddress(ByteArray.fromHexString(witnessAccount.get("pqcAddress").unwrapped().toString()));//pqc
     witness.setCreditScore(Constant.CREDIT_SCORE);//consensus
     return witness;
   }
