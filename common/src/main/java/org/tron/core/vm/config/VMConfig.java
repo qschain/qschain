@@ -15,7 +15,7 @@ public class VMConfig {
 
   private static boolean ALLOW_TVM_TRANSFER_TRC10 = false;
 
-  private static boolean ALLOW_TVM_CONSTANTINOPLE = false;
+  private static boolean ALLOW_TVM_CONSTANTINOPLE = true;
 
   private static boolean ALLOW_MULTI_SIGN = false;
 
@@ -33,7 +33,7 @@ public class VMConfig {
 
   private static boolean ALLOW_TVM_COMPATIBLE_EVM = false;
 
-  private static boolean ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX = false;
+  private static boolean ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX = true;
 
   private static boolean ALLOW_TVM_FREEZE_V2 = false;
 
@@ -47,17 +47,17 @@ public class VMConfig {
 
   private static long DYNAMIC_ENERGY_MAX_FACTOR = 0L;
 
-  private static boolean ALLOW_TVM_SHANGHAI = false;
+  private static boolean ALLOW_TVM_SHANGHAI = true;
 
   private static boolean ALLOW_ENERGY_ADJUSTMENT = false;
 
   private static boolean ALLOW_STRICT_MATH = false;
 
-  private static boolean ALLOW_TVM_CANCUN = false;
+  private static boolean ALLOW_TVM_CANCUN = true;
 
   private static Boolean DISABLE_JAVA_LANG_MATH = false;
 
-  private static boolean ALLOW_TVM_BLOB = false;
+  private static boolean ALLOW_TVM_BLOB = true;
 
   private VMConfig() {
   }
@@ -87,7 +87,8 @@ public class VMConfig {
   }
 
   public static void initAllowTvmSolidity059(long allow) {
-    ALLOW_TVM_SOLIDITY_059 = allow == 1;
+    //ALLOW_TVM_SOLIDITY_059 = allow == 1;
+    ALLOW_TVM_SOLIDITY_059 = true;//lfm
   }
 
   public static void initAllowShieldedTRC20Transaction(long allow) {
@@ -115,7 +116,8 @@ public class VMConfig {
   }
 
   public static void initAllowHigherLimitForMaxCpuTimeOfOneTx(long allow) {
-    ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX = allow == 1;
+    //ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX = allow == 1;
+    ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX = true;
   }
 
   public static void initAllowTvmFreezeV2(long allow) {
@@ -175,7 +177,8 @@ public class VMConfig {
   }
 
   public static boolean allowTvmConstantinople() {
-    return ALLOW_TVM_CONSTANTINOPLE;
+    //return ALLOW_TVM_CONSTANTINOPLE;
+    return true;//lfm
   }
 
   public static boolean allowMultiSign() {
@@ -211,7 +214,8 @@ public class VMConfig {
   }
 
   public static boolean allowHigherLimitForMaxCpuTimeOfOneTx() {
-    return ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX;
+    //return ALLOW_HIGHER_LIMIT_FOR_MAX_CPU_TIME_OF_ONE_TX;
+    return true;
   }
 
   public static boolean allowTvmFreezeV2() {
@@ -239,7 +243,8 @@ public class VMConfig {
   }
 
   public static boolean allowTvmShanghai() {
-    return ALLOW_TVM_SHANGHAI;
+    //return ALLOW_TVM_SHANGHAI;
+    return true;
   }
 
   public static boolean allowEnergyAdjustment() {
@@ -251,7 +256,8 @@ public class VMConfig {
   }
 
   public static boolean allowTvmCancun() {
-    return ALLOW_TVM_CANCUN;
+    //return ALLOW_TVM_CANCUN;
+    return true;
   }
 
   public static boolean disableJavaLangMath() {
@@ -259,6 +265,7 @@ public class VMConfig {
   }
 
   public static boolean allowTvmBlob() {
-    return ALLOW_TVM_BLOB;
+    //return ALLOW_TVM_BLOB;
+    return true;
   }
 }

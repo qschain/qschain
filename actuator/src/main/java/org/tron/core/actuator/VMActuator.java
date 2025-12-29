@@ -431,7 +431,7 @@ public class VMActuator implements Actuator2 {
 
     rootRepository.createContract(contractAddress, new ContractCapsule(newSmartContract));
     byte[] code = newSmartContract.getBytecode().toByteArray();
-    if (!VMConfig.allowTvmConstantinople()) {
+    if (VMConfig.allowTvmConstantinople()) {
       rootRepository.saveCode(contractAddress, ProgramPrecompile.getCode(code));
     }
     // transfer from callerAddress to contractAddress according to callValue

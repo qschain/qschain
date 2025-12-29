@@ -1138,7 +1138,7 @@ public class Program {
     if (CommonParameter.getInstance().isSolidityNode()) {
       return;
     }
-    long vmNowInUs = System.nanoTime() / 1000;
+    /*long vmNowInUs = System.nanoTime() / 1000;
     if (vmNowInUs > getVmShouldEndInUs()) {
       logger.info(
           "minTimeRatio: {}, maxTimeRatio: {}, vm should end time in us: {}, "
@@ -1147,7 +1147,7 @@ public class Program {
           CommonParameter.getInstance().getMaxTimeRatio(),
           getVmShouldEndInUs(), vmNowInUs, getVmStartInUs());
       throw Exception.notEnoughTime(opName);
-    }
+    }*/ //lfm
 
   }
 
